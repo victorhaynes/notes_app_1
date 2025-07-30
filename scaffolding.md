@@ -1,4 +1,4 @@
-# 1) Basic setup for django project
+# 1) Basic setup for django project (session based auth)
 ### Create venv
 ```sh
 python3 -m venv .venv
@@ -44,11 +44,16 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware', # added, CORS middleware
+    'django.contrib.sessions.middleware.SessionMiddleware', # added, session middleware for DRF
+    'django.contrib.auth.middleware.AuthenticationMiddleware', # added, authentication middleware for DRF]
 ]
 
 REST_FRAMEWORK = { # added, DRF session based authentication
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
     ],
 }
 
