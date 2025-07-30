@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -59,9 +60,8 @@ REST_FRAMEWORK = { # added, DRF session based authentication
     ],
 }
 
-# CORS settings
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = ['http://localhost:3000']
+CORS_ALLOW_CREDENTIALS = True # added, CORS support
+CORS_ALLOWED_ORIGINS = ['http://localhost:3000'] # added, CORS support
 
 ROOT_URLCONF = 'notes_project.urls'
 
@@ -87,10 +87,14 @@ WSGI_APPLICATION = 'notes_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
+DATABASES = { # added, psql setup
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
     }
 }
 
