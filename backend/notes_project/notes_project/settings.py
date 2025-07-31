@@ -52,6 +52,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware', # added, CORS middleware
+    'django.contrib.sessions.middleware.SessionMiddleware', # added, session middleware for DRF
+    'django.contrib.auth.middleware.AuthenticationMiddleware', # added, authentication middleware for DRF
 ]
 
 REST_FRAMEWORK = { # added, DRF session based authentication
@@ -139,3 +141,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CSRF_COOKIE_HTTPONLY = False # added, allow all CSRF for dev purposes

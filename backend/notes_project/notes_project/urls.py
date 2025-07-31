@@ -16,12 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from ..notes import views
+from notes.views import views, auth
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/notes/', views.note_list, name='note-list'),
-    path('api/notes/<int:pk>/', views.note_detail, name='note-detail'),
-    path('api/users/', views.user_list, name='user-list'),
-    path('api/users/<int:pk>/', views.user_detail, name='user-detail'),
+    path('api/auth/register/', auth.RegisterView.as_view(), name='register'),
+    path('api/auth/login/', auth.LoginView.as_view(), name='login'),
+    path('api/auth/logout/', auth.LogOutView.as_view(), name='logout'),
+    path('api/auth/password-change/', auth.ChangePasswordView.as_view(), name='logout'),
+    path('api/auth/password-reset/', auth.ResetPasswordview.as_view(), name='logout'),
+    path('api/auth/me/', auth.MeView.as_view(), name='me'),
+    # path('api/notes/', views.note_list, name='note-list'),
+    # path('api/notes/<int:pk>/', views.note_detail, name='note-detail'),
+    # path('api/users/', views.user_list, name='user-list'),
+    # path('api/users/<int:pk>/', views.user_detail, name='user-detail'),
 ]

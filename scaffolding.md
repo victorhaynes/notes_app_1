@@ -52,13 +52,12 @@ REST_FRAMEWORK = { # added, DRF session based authentication
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
     ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
 }
 
 CORS_ALLOW_CREDENTIALS = True # added, CORS support
 CORS_ALLOWED_ORIGINS = ['http://localhost:3000'] # added, CORS support
+
+CSRF_COOKIE_HTTPONLY = False # added, allow all CSRF for dev purposes
 
 DATABASES = { # added, psql setup
     'default': {
@@ -98,7 +97,11 @@ python manage.py createsuperuser
 ```
 
 ## 2) App-specific steps
-- models
-- serializers
-- views
-- urls
+1) models / db schemas
+2) serializers (auth related, can make general serializers now too)
+3) backend auth views (config already setup earlier)
+5) setup urls
+6) client auth (login/register/logout UI)
+7) general views and or protected views
+8) Add more urls
+8) client-side protected routes
