@@ -55,7 +55,7 @@ REST_FRAMEWORK = { # added, DRF session based authentication
 }
 
 CORS_ALLOW_CREDENTIALS = True # added, CORS support
-CORS_ALLOWED_ORIGINS = ['http://localhost:3000'] # added, CORS support
+CORS_ALLOWED_ORIGINS = ['http://localhost:5173'] # added, CORS support - Vite React app
 
 CSRF_COOKIE_HTTPONLY = False # added, allow all CSRF for dev purposes
 
@@ -101,7 +101,7 @@ python manage.py createsuperuser
 2) serializers (auth related, can make general serializers now too)
 3) backend auth views (config already setup earlier)
 5) setup urls
-6) client auth (login/register/logout UI)
+6) client landing page + auth (login/register/logout UI)
 7) general views and or protected views
 8) Add more urls
 8) client-side protected routes
