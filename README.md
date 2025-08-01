@@ -5,7 +5,7 @@ This is part of a series of apps to upskill in the following while practicing va
 - NextJS
 - tRPC
 
-For more polished works see resume. This is the first app which focuses on TypeScript + React, Django + session based auth, and PSQL.
+For more polished works see resume. This is the first app which focuses on NextJS + React, Django + session based auth, and PSQL.
 
 ## Data Model
 User --> Notes

@@ -12,10 +12,9 @@ from ..serializers import NoteSerializer, UserSerializer, UserWithNotesSerialize
 # --- Note Views ---
 # --- Note Views ---
 class NoteListView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        notes = Note.objects.filter(owner=request.user)
+        notes = Note.objects.all()
         serializer = NoteSerializer(instance=notes, many=True)
         return Response(serializer.data)
     
