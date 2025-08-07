@@ -7,13 +7,16 @@ from ..serializers import CreateUserSerializer, UserSerializer, ChangePasswordSe
 
 
 class RegisterView(APIView):
+    # Disables X-CSRFToken header check. 
+    authentication_classes = []
+
     def post(self, request):
         serializer = CreateUserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             login(request, user)
             return Response({'message': 'Account created successfully. Now logged in.'}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"serializer_errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
@@ -62,7 +65,7 @@ class ChangePasswordView(APIView):
                 user.save()
                 return Response({'message': 'Password reset successful.'}, status=status.HTTP_200_OK)
             return Response({'error': 'Incorrect old password.'}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"serializer_errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ResetPasswordview(APIView):
@@ -81,5 +84,5 @@ class ResetPasswordview(APIView):
             user.set_password(new_password)
             user.save()
             return Response({'message': 'Password reset successful. Login with new password.'}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"serializer_errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
