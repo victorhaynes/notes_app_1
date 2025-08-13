@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./_components/Navbar";
+import { CheckOrSetUserOnMount } from "./_components/CheckOrSetUserOnMount";
 import AppProviders from "./providers";
 import App from "next/app";
 
@@ -31,6 +32,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AppProviders>
+          <CheckOrSetUserOnMount/>
           <header>
             <Navbar />
           </header>

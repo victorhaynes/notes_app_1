@@ -15,8 +15,17 @@ class RegisterView(APIView):
         if serializer.is_valid():
             user = serializer.save()
             login(request, user)
-            return Response({'message': 'Account created successfully. Now logged in.'}, status=status.HTTP_201_CREATED)
+            serializer = UserSerializer(user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({"serializer_errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+class MeView(APIView):
+    def get(self, request):
+        # user.is_authenticated takes a user object and uses the session to check if the user is logged in
+        if request.user.is_authenticated:
+            serializer = UserSerializer(request.user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({"user": "Not logged in."}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class LoginView(APIView):
@@ -39,14 +48,6 @@ class LogOutView(APIView):
     def post(self, request): # Note takes post method not delete
         logout(request)
         return Response({'message': 'Logged out successfully.'}, status=status.HTTP_200_OK)
-
-
-class MeView(APIView):
-    def get(self, request):
-        # user.is_authenticated takes a user object and uses the session to check if the user is logged in
-        if request.user.is_authenticated:
-            return Response({"username": request.user.username})
-        return Response({"user": "Not logged in."}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class ChangePasswordView(APIView):

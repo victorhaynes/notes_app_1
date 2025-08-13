@@ -6,12 +6,12 @@ const axiosPublic = axios.create({
   withCredentials: true
 });
 
-const axiosSecure = axios.create({
+const axiosAuthenticated = axios.create({
   baseURL: 'http://localhost:8000/api/',
   withCredentials: true,
 })
 
-axiosSecure.interceptors.request.use((config) => {
+axiosAuthenticated.interceptors.request.use((config) => {
     const csrfToken = Cookies.get("csrftoken");
     if (csrfToken) {
       config.headers["X-CSRFToken"] = csrfToken;
@@ -22,4 +22,4 @@ axiosSecure.interceptors.request.use((config) => {
 
 
 
-export { axiosPublic, axiosSecure }
+export { axiosPublic, axiosAuthenticated }
