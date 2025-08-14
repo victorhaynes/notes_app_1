@@ -39,13 +39,15 @@ class LoginView(APIView):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            serializer = UserSerializer(instance=user) # Serialize the user, expose UI necessary fields
-            return Response({'message': 'Logged in successfully.', 'data': {**serializer.data}}, status=status.HTTP_200_OK)
+            serializer = UserSerializer(user) # Serialize the user, expose UI necessary fields
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({'error': 'Invalid credentials.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogOutView(APIView):
+    """By default requires CSRF token for post method. logout() relies on a cookie in request."""
     def post(self, request): # Note takes post method not delete
+        print(request)
         logout(request)
         return Response({'message': 'Logged out successfully.'}, status=status.HTTP_200_OK)
 

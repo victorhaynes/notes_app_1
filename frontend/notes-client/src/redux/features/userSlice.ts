@@ -1,7 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { axiosAuthenticated, axiosPublic } from "@/app/_utils/axios";
 import { createAsyncThunk  } from "@reduxjs/toolkit";
-import Cookies from "js-cookie";
 
 // -- Types --
 type User = {
@@ -28,7 +27,7 @@ const initialState: UserState = {
 // createAsyncThunk<
 //   Returned,         // Type of what the thunk will resolve with
 //   ThunkArg,         // Type of the argument you pass to dispatch(registerUser(...))
-//   ThunkApiConfig    // Extra options for typing rejectValue, state, dispatch, etc.
+//   ThunkApiConfig    // Extra options for typing rejectValue, state, dispatch, etc...can destructure thunkAPI
 // >(
 //   typePrefix: string,              // First parameter
 //   payloadCreator: AsyncFunction    // Second parameter
@@ -52,34 +51,59 @@ export const registerUser = createAsyncThunk<
     }
   )
 
-  export const performLogout = createAsyncThunk(
-    "user/logout",
-    async (_, {dispatch}) => {
+export const fetchCurrentUser = createAsyncThunk<
+  User,
+  void,
+  { rejectValue: string}
+  >("user/fetchCurrentUser", 
+    async (_, {rejectWithValue}) => {
       try {
-        await axiosAuthenticated.post("/auth/logout/")
-        Cookies.remove("sessionid")
-        Cookies.remove("csrftoken")
-      } catch (error) {
-        console.log()
+        const response = await axiosAuthenticated.get<User>("/auth/me/")
+        return response.data
+      } catch (error){
+        return rejectWithValue("Failed to fetch current user")
       }
     }
   )
 
+  export const requestLogout = createAsyncThunk<
+    void,
+    void,
+    {rejectValue: string}
+    >("user/logout",
+      async (_, {rejectWithValue}) => {
+        try {
+          await axiosAuthenticated.post("/auth/logout/")
+        } catch (error) {
+          return rejectWithValue("Logout failed.")
+        }
+      }
+    )
+
+export const loginUser = createAsyncThunk<
+  User,
+  {"username": string, "password": string},
+  {rejectValue: string}
+  >("user/login",
+    async (formData, {rejectWithValue}) => {
+      try {
+        const response = await axiosPublic.post<User>("/auth/login/", formData)
+        return response.data
+      } catch (error) {
+        return rejectWithValue("Login failed")
+      }
+    }
+  )
 
 // -- Slice --
-const userSlice = createSlice({
+const userSlice = createSlice({ // -- Note thunks just return payloads or null, state mutation happens in the slice
   name: "user",
   initialState,
-  reducers: {
-    login(state, action: PayloadAction<User>){
-      state.user = action.payload;
-    },
-    logout(state){
-      state.user = null;
-    }
+  reducers: { // -- Synchronous state mutation only
   },
-  extraReducers: (builder) => {
+  extraReducers: (builder) => { // -- Asynchronous state mutation
     builder
+      // -- User Registration Cases
       .addCase(registerUser.pending, (state) => { // -- Note: registerUser() has type prefix "user/register". Here we define the various states of the thunk
         state.loading = true;
         state.error = null;
@@ -90,10 +114,39 @@ const userSlice = createSlice({
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload ?? "Registration failed"
+        state.error = action.payload ?? "Registration failed."
+      })
+      // -- Fetch Current User Cases -- note .pending not necessary we don't care about loading state for this really
+      .addCase(fetchCurrentUser.fulfilled, (state, action) => {
+        state.user = action.payload
+      })
+      .addCase(fetchCurrentUser.rejected, (state, action) => {
+        state.user = null
+        // -- Note: we do not want to set any errors for this...it is totally valid for user check to fail
+      })
+      // -- Logout Cases
+      .addCase(requestLogout.fulfilled, (state) => {
+        state.user = null
+      })
+      .addCase(requestLogout.rejected, (state, action) => {
+        state.user = null
+        state.error = action.payload ?? "Logout failed."
+      })
+      // -- Login Cases
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.user = action.payload
+        state.loading = false
+      })
+      .addCase(loginUser.pending, (state) => {
+        state.loading = true;
+        state.error = null
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload ?? "Login failed."
       })
   }
 })
 
-export const { login, logout} = userSlice.actions;
+// standard reducers would be exported here // export const { login  } = userSlice.actions;
 export default userSlice.reducer

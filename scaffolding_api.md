@@ -57,7 +57,11 @@ REST_FRAMEWORK = { # added, DRF session based authentication
 CORS_ALLOW_CREDENTIALS = True # added, CORS support
 CORS_ALLOWED_ORIGINS = ['http://localhost:3000'] # added, CORS support - Nextjs React app
 
-CSRF_COOKIE_HTTPONLY = False # added, allow all CSRF for dev purposes
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+]
+
+CSRF_COOKIE_HTTPONLY = False # added, allow all CSRF token to be JS-readable so it can be sent as a header
 
 DATABASES = { # added, psql setup
     'default': {

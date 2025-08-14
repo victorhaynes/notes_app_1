@@ -13,6 +13,7 @@ const axiosAuthenticated = axios.create({
 
 axiosAuthenticated.interceptors.request.use((config) => {
     const csrfToken = Cookies.get("csrftoken");
+    console.log(csrfToken)
     if (csrfToken) {
       config.headers["X-CSRFToken"] = csrfToken;
     }

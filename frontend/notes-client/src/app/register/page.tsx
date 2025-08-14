@@ -21,8 +21,8 @@ function RegisterPage() {
   const dispatch = useDispatch<AppDispatch>() // the <AppDispatch> is optional, but helps with type safety / auto-completion
 
   // - Use the useSelector hook to access the user state in the Redux store
-  // const { userLoading, error, user } = useSelector((state: RootState) => state.user) // Destructure the user state from the Redux store
-  const userState = useSelector((state: RootState) => state.user)
+  // const { user, userLoading, userError } = useSelector((state: RootState) => state.user) // Destructure the user state from the Redux store
+  const userState = useSelector((state: RootState) => state.userState)
   const user = userState.user
   const userError = userState.error;
   const userLoading = userState.loading
@@ -32,13 +32,12 @@ function RegisterPage() {
   const form = useForm<RegistrationForm>();
   const register = form.register;
   const handleSubmit = form.handleSubmit;
-  const watch = form.watch;
   const reset = form.reset;
   const formErrors = form.formState.errors;
 
 
 
-  function onSubmit(data: RegistrationForm): void {
+  function submitForm(data: RegistrationForm): void {
     if (data.password !== data.confirmPassword) {
       alert("Passwords do not match.")
       return
@@ -51,7 +50,7 @@ function RegisterPage() {
     }))
   }
 
-  useEffect(() => { // Resetting lives outside the onSubmit function so it only resets when user state changes (null -> user object). Otherwise it would reset on error too.
+  useEffect(() => { // Resetting lives outside the submitForm function so it only resets when user state changes (null -> user object). Otherwise it would reset on error too.
     if (user){ // Remember user is null initially
       reset()
       router.push("/profile")
@@ -61,7 +60,7 @@ function RegisterPage() {
   return (
     <div>
       <h2>Registration Form</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(submitForm)}>
         <div>
           <label>Username</label>
           <input type="text" className="bg-sky-200" {...register("username", { required: true})}/>
@@ -88,7 +87,7 @@ function RegisterPage() {
       </form>
       <div>
         {userError && <p className="text-red-600">{userError}</p>}
-        {user && <p className="text-gren-600">Registered Successfully! Redirecting...</p>}
+        {user && <p className="text-green-600">Registered Successfully! Redirecting...</p>}
       </div>
     </div>
   )

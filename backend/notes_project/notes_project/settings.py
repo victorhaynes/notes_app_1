@@ -65,6 +65,12 @@ REST_FRAMEWORK = { # added, DRF session based authentication
 CORS_ALLOW_CREDENTIALS = True # added, CORS support
 CORS_ALLOWED_ORIGINS = ['http://localhost:3000'] # added, CORS support - Nextjs React app
 
+CSRF_TRUSTED_ORIGINS = [ # // added, CORS support for Auth. Allow incoming cross origin CSRF token headers
+    "http://localhost:3000",
+]
+
+CSRF_COOKIE_HTTPONLY = False # added, allow all CSRF token to be JS-readable so it can be sent as a header
+
 ROOT_URLCONF = 'notes_project.urls'
 
 TEMPLATES = [
@@ -141,5 +147,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-CSRF_COOKIE_HTTPONLY = False # added, allow all CSRF for dev purposes

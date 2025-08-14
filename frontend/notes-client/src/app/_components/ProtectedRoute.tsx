@@ -10,7 +10,7 @@ type ProtectedRouterProps = {
 }
 
 const ProtectedRoute = ({children}: ProtectedRouterProps) => {
-  const user = useSelector((state: RootState) => state.user.user)
+  const user = useSelector((state: RootState) => state.userState.user)
   const router = useRouter();
 
   useEffect(() => {
