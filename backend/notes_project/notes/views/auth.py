@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from ..serializers import CreateUserSerializer, UserSerializer, ChangePasswordSerializer, ResetPasswordSerializer
+from ..serializers import UserCreateSerializer, UserSerializer, ChangePasswordSerializer, ResetPasswordSerializer
+from typing import cast
 
 
 class RegisterView(APIView):
@@ -11,7 +12,7 @@ class RegisterView(APIView):
     authentication_classes = []
 
     def post(self, request):
-        serializer = CreateUserSerializer(data=request.data)
+        serializer = UserCreateSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             login(request, user)
@@ -46,7 +47,7 @@ class LoginView(APIView):
 
 class LogOutView(APIView):
     """By default requires CSRF token for post method. logout() relies on a cookie in request."""
-    def post(self, request): # Note takes post method not delete
+    def post(self, request): # By convention use post method not delete
         print(request)
         logout(request)
         return Response({'message': 'Logged out successfully.'}, status=status.HTTP_200_OK)

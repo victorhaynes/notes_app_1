@@ -45,8 +45,19 @@ export const registerUser = createAsyncThunk<
         const response = await axiosPublic.post<User>("auth/register/", userData); // -- Axios allows any response type, type the response here as User
         return response.data;
       } catch (error: any){ // Note: axios throws for HTTP error codes automatically
-        const errorMessage = error.response?.data?.message || "Registration failed."
-        return rejectWithValue(errorMessage)
+        const errorBody = error.response?.data
+        let errorMessages = "Registration failed." // Default/Generic
+        if (errorBody?.serializer_errors){ // If there are serializer/validation errors in Django I'm sending the default errors inside of a serializer_errors key
+          errorMessages = Object.entries(errorBody.serializer_errors)
+            .flatMap(([fieldName, fieldErrors]) => {
+              return (fieldErrors as string[]).map(individualError => {
+                return `${fieldName}: ${individualError}`
+              })
+            })
+            .join(" ")
+        }
+
+        return rejectWithValue(errorMessages)
       }
     }
   )

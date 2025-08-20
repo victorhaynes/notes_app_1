@@ -1,73 +1,64 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from ..models import Note
-from ..serializers import NoteSerializer, UserSerializer, UserWithNotesSerializer
+from ..serializers import NoteReadSerializer, NoteWriteSerializer
 # Create your views here.
 
-
-# --- Note Views ---
-# --- Note Views ---
-# --- Note Views ---
-class NoteListView(APIView):
+# --- Note CRUD Views
+class NoteListCreateAPIView(APIView): 
+    """Group get() [mine|all] and post() methods in the List & Create view for Note class"""
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        notes = Note.objects.all()
-        serializer = NoteSerializer(instance=notes, many=True)
-        return Response(serializer.data)
-    
+        notes = Note.objects.filter(owner=request.user)
+        read_serializer = NoteReadSerializer(notes, many=True)
+        return Response(read_serializer.data, status=status.HTTP_200_OK)
+
     def post(self, request):
-        serializer = NoteSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(owner=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        write_serializer = NoteWriteSerializer(data=request.data, context={'request': request}) # context needed so serializer's "owner = serializers.HiddenField(default=serializers.CurrentUserDefault())"" works
+        if write_serializer.is_valid():
+            note = write_serializer.save()
+            read_serializer = NoteReadSerializer(note)
+            return Response(read_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(write_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class NoteDetailAPIView(APIView):
+    """Group get() [mine&single], put(), patch(), delete() in the Detail view for Note class """
+    permission_classes = [permissions.IsAuthenticated]
 
-# @api_view(['GET', 'PUT', 'DELETE'])
-# @permission_classes([permissions.IsAuthenticated])
-# def note_detail(request, pk):
-#     try:
-#         note = Note.objects.get(pk=pk, owner=request.user)
-#     except Note.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
+    def get(self, request, pk):
+        """Remember pk comes from the url path '/notes/66', not the request"""
+        note = get_object_or_404(Note, pk=pk, owner=request.user)
+        read_serializer = NoteReadSerializer(note)
+        return Response(read_serializer.data)
+
+    def put(self, request, pk):
+        """Total Update"""
+        note = get_object_or_404(Note, pk=pk, owner=request.user)
+        write_serializer = NoteWriteSerializer(note, data=request.data, context={'request': request})
+        if write_serializer.is_valid():
+            note = write_serializer.save()
+            read_serializer = NoteReadSerializer(note)
+            return Response(read_serializer.data, status=status.HTTP_200_OK)
+        return Response(write_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, pk):
+        """Partial Update"""
+        note = get_object_or_404(Note, pk=pk, owner=request.owner)
+        write_serializer = NoteWriteSerializer(note, data=request.data, partial=True, context={'request': request})
+        if write_serializer.is_valid():
+            note = write_serializer.save()
+            read_serializer = NoteReadSerializer(note)
+            return Response(read_serializer.data, status=status.HTTP_200_OK)
+        return Response(write_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        note = get_object_or_404(Note, pk=pk, owner=request.user)
+        note.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     
-#     if request.method == 'GET':
-#         serializer = NoteSerializer(note)
-#         return Response(serializer.data)
+
     
-#     elif request.method == 'PUT':
-#         serializer = NoteSerializer(note, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save(owner=request.user)
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-#     elif request.method == 'DELETE':
-#         note.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-# # --- User Views ---
-# # --- User Views ---
-# # --- User Views ---
-# @api_view(['GET'])
-# @permission_classes([permissions.IsAuthenticated])
-# def user_list(request):
-#     users = User.objects.all()
-#     serializer = UserSerializer(users, many=True)
-#     return Response(serializer.data)
-
-
-# @api_view(['GET'])
-# @permission_classes([permissions.IsAuthenticated])
-# def user_detail(request, pk):
-#     try:
-#         user = User.objects.get(pk=pk)
-#     except User.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-    
-#     serializer = UserSerializer(user)
-#     return Response(serializer.data)
