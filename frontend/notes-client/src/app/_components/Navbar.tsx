@@ -20,13 +20,13 @@ const Navbar = () => {
       {/* Remember you must wrap the dispatcher and it's action/thunk - otherwise it runs imemdiately */}
       {user ? 
         <button onClick={() => dispatch(requestLogout())}>Logout</button> 
-        : 
-        <Link href={"/login"}>Login</Link>
+        :
+        <>
+          <Link href={"/login"}>Login</Link>
+          <Link href={"/register"}>Register</Link>
+        </>
       }
-      <Link href={"/register"}>Register</Link>
       <Link href={"/profile"}>Profile</Link>
-      <Link href={"/counter"}>Counter</Link>
-      <Link href={"/dashboard"}>Dashboard</Link>
     </div>
   )
 }

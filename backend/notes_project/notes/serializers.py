@@ -54,3 +54,24 @@ class NoteWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Note
         fields = ['title', 'content', 'owner']
+
+
+# class NoteNestedReadSerializer(serializers.ModelSerializer):
+#     """
+#     Custom: Does not show the owner intentially, only for nesting purpose
+#     in UserWithNotesReadSerializer serializer 
+#     """
+#     class Meta:
+#         model = Note
+#         fields = ['id', 'title', 'content', 'created_at', 'updated_at']
+
+# class UserWithNotesReadSerializer(serializers.ModelSerializer):
+#     """
+#     Instead of a list of notes with repeating user object, 
+#     return a single user and all of their notes
+#     """
+#     notes = NoteNestedReadSerializer(many=True, read_only=True)
+
+#     class Meta:
+#         model = User
+#         fields = ['id', 'username', 'email', 'notes']

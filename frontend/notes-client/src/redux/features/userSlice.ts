@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { axiosAuthenticated, axiosPublic } from "@/app/_utils/axios";
 import { createAsyncThunk  } from "@reduxjs/toolkit";
+import { axiosAuthenticated, axiosPublic } from "@/app/_utils/axios";
+
 
 // -- Types --
 type User = {
@@ -12,7 +13,7 @@ type User = {
 type UserState = {
   user: User | null;
   loading: boolean;
-  error: string | null
+  error: string | null;
 }
 
 // -- Initial State --
@@ -33,6 +34,14 @@ const initialState: UserState = {
 //   payloadCreator: AsyncFunction    // Second parameter
 // )
 
+// -- Note the options for ThunkApiConfig i.e. -> {rejectValue: string}
+// interface AsyncThunkConfig {
+//   state?: unknown;
+//   dispatch?: Dispatch;
+//   extra?: unknown;
+//   rejectValue?: unknown;
+//   serializedErrorType?: unknown;
+// }
 
 // -- Thunks --
 export const registerUser = createAsyncThunk<

@@ -22,7 +22,7 @@ class NoteListCreateAPIView(APIView):
             note = write_serializer.save()
             read_serializer = NoteReadSerializer(note)
             return Response(read_serializer.data, status=status.HTTP_201_CREATED)
-        return Response(write_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"serializer_errors": write_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 class NoteDetailAPIView(APIView):
     """Group get() [mine&single], put(), patch(), delete() in the Detail view for Note class """
@@ -42,17 +42,17 @@ class NoteDetailAPIView(APIView):
             note = write_serializer.save()
             read_serializer = NoteReadSerializer(note)
             return Response(read_serializer.data, status=status.HTTP_200_OK)
-        return Response(write_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"serializer_errors": write_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def patch(self, request, pk):
         """Partial Update"""
-        note = get_object_or_404(Note, pk=pk, owner=request.owner)
+        note = get_object_or_404(Note, pk=pk, owner=request.user)
         write_serializer = NoteWriteSerializer(note, data=request.data, partial=True, context={'request': request})
         if write_serializer.is_valid():
             note = write_serializer.save()
             read_serializer = NoteReadSerializer(note)
             return Response(read_serializer.data, status=status.HTTP_200_OK)
-        return Response(write_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"serializer_errors": write_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
         note = get_object_or_404(Note, pk=pk, owner=request.user)
