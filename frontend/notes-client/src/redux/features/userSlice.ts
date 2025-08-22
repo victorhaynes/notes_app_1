@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk  } from "@reduxjs/toolkit";
 import { axiosAuthenticated, axiosPublic } from "@/app/_utils/axios";
+import handleResponseError from "@/app/_utils/axios_error_handling";
 
 
 // -- Types --
@@ -54,21 +55,10 @@ export const registerUser = createAsyncThunk<
         const response = await axiosPublic.post<User>("auth/register/", userData); // -- Axios allows any response type, type the response here as User
         return response.data;
       } catch (error: any){ // Note: axios throws for HTTP error codes automatically
-        const errorBody = error.response?.data
-        let errorMessages = "Registration failed." // Default/Generic
-        if (errorBody?.serializer_errors){ // If there are serializer/validation errors in Django I'm sending the default errors inside of a serializer_errors key
-          errorMessages = Object.entries(errorBody.serializer_errors)
-            .flatMap(([fieldName, fieldErrors]) => {
-              return (fieldErrors as string[]).map(individualError => {
-                return `${fieldName}: ${individualError}`
-              })
-            })
-            .join(" ")
-        }
-
+        const errorMessages = handleResponseError(error)
         return rejectWithValue(errorMessages)
+        }
       }
-    }
   )
 
 export const fetchCurrentUser = createAsyncThunk<

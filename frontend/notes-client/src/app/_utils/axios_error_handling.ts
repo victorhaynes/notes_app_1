@@ -1,7 +1,8 @@
 
 export default function handleResponseError(error: any): string {
   const errorBody = error.response?.data
-  let errorMessages = "Registration failed." // Default/Generic
+  const errorStatus = error?.response?.status
+  let errorMessages = `An error occured with your request. Code: ${errorStatus}` // Default/Generic
   if (errorBody?.serializer_errors) { // If there are serializer/validation errors in Django I'm sending the default errors inside of a serializer_errors key
     errorMessages = Object.entries(errorBody.serializer_errors)
       .flatMap(([fieldName, fieldErrors]) => {
