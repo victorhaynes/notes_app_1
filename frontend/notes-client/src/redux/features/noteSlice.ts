@@ -48,7 +48,7 @@ export const postNote = createAsyncThunk<
   >("note/create",
     async (noteData, {rejectWithValue}) => {
       try {
-        const response = await axiosAuthenticated.post<Note>("api/notes/", noteData)
+        const response = await axiosAuthenticated.post<Note>("/notes/", noteData)
         return response.data
       } catch (error: any){
         const errorBody = error.response?.data
@@ -65,14 +65,34 @@ export const listNotes = createAsyncThunk<
   >("note/list",
     async(_, { rejectWithValue }) => {
       try {
-        const response = await axiosAuthenticated.get<Note[]>("api/notes/")
+        const response = await axiosAuthenticated.get<Note[]>("/notes/")
+        console.log(response)
         return response.data
       } catch (error: any){
+        console.log(error)
         const errorMessages = handleResponseError(error)
         return rejectWithValue(errorMessages)
       }
     }
   )
+
+export const testThunk = createAsyncThunk<
+  object,
+  void,
+  { rejectValue: string }
+>("note/test",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosAuthenticated.get<object>("/test/")
+      console.log(response)
+      return response.data
+    } catch (error: any) {
+      console.log(error)
+      const errorMessages = handleResponseError(error)
+      return rejectWithValue(errorMessages)
+    }
+  }
+)
 
 export const getNote = createAsyncThunk<
   Note,
@@ -81,7 +101,7 @@ export const getNote = createAsyncThunk<
 >("note/read",
   async (noteId, { rejectWithValue }) => {
     try {
-      const response = await axiosAuthenticated.get<Note>(`api/notes/${noteId}`)
+      const response = await axiosAuthenticated.get<Note>(`/notes/${noteId}`)
       return response.data
     } catch (error: any) {
       const errorMessages = handleResponseError(error)
@@ -97,7 +117,7 @@ export const putNote = createAsyncThunk<
 >("note/put",
   async (newNoteData, { rejectWithValue }) => {
     try {
-      const response = await axiosAuthenticated.put<Note>(`api/notes/${newNoteData.id}/`, newNoteData)
+      const response = await axiosAuthenticated.put<Note>(`/notes/${newNoteData.id}/`, newNoteData)
       return response.data
     } catch (error: any) {
       const errorMessages = handleResponseError(error)
@@ -254,6 +274,8 @@ const noteSlice = createSlice({
       })
   }
 })
+
+export default noteSlice.reducer
 
 // -- For the future, if you want to get real optimal you can use a type structure of
 // -- a POJO of id: POJO for CRUD where the nested POJO is the Note object like this:

@@ -24,6 +24,15 @@ class NoteListCreateAPIView(APIView):
             return Response(read_serializer.data, status=status.HTTP_201_CREATED)
         return Response({"serializer_errors": write_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
+
+class Test(APIView): 
+    """test"""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        return Response({"test": "ok"})
+
+
 class NoteDetailAPIView(APIView):
     """Group get() [mine&single], put(), patch(), delete() in the Detail view for Note class """
     permission_classes = [permissions.IsAuthenticated]

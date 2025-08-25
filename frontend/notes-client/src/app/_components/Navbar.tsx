@@ -19,7 +19,10 @@ const Navbar = () => {
       <Link href={"/about"}>About</Link>
       {/* Remember you must wrap the dispatcher and it's action/thunk - otherwise it runs imemdiately */}
       {user ? 
-        <button onClick={() => dispatch(requestLogout())}>Logout</button> 
+        <>
+          <button onClick={() => dispatch(requestLogout())}>Logout</button> 
+          <Link href={"/notes"}>My Notes</Link>
+        </>
         :
         <>
           <Link href={"/login"}>Login</Link>
