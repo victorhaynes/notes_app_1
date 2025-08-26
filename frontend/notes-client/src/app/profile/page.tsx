@@ -6,6 +6,7 @@ import ProtectedRoute from "../_components/ProtectedRoute"
 
 const ProfilePage = () => {
   const user = useSelector((state: RootState) => state.userState.user)
+  
 
   return (
     <ProtectedRoute>

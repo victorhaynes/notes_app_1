@@ -28,7 +28,6 @@ urlpatterns = [
     path('api/auth/me/', auth.MeView.as_view(), name='me'),
     path('api/notes/', views.NoteListCreateAPIView.as_view(), name='note-list'),
     path('api/notes/<int:pk>/', views.NoteDetailAPIView.as_view(), name='note-detail'),
-    path('api/test/', views.Test.as_view(), name="testing")
     # path('api/notes/<int:pk>/', views.note_detail, name='note-detail'),
     # path('api/users/', views.user_list, name='user-list'),
     # path('api/users/<int:pk>/', views.user_detail, name='user-detail'),

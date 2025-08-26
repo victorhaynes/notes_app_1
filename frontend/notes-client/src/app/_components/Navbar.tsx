@@ -14,22 +14,24 @@ const Navbar = () => {
 
 
   return (
-    <div className='flex gap-4'>
-      <Link href={"/"}>Home</Link>
-      <Link href={"/about"}>About</Link>
-      {/* Remember you must wrap the dispatcher and it's action/thunk - otherwise it runs imemdiately */}
-      {user ? 
-        <>
-          <button onClick={() => dispatch(requestLogout())}>Logout</button> 
-          <Link href={"/notes"}>My Notes</Link>
-        </>
-        :
-        <>
-          <Link href={"/login"}>Login</Link>
-          <Link href={"/register"}>Register</Link>
-        </>
-      }
-      <Link href={"/profile"}>Profile</Link>
+    <div className="max-w-7xl mx-auto px-2 mt-4">
+      <div className='flex gap-2 font-semibold divide-x divide-gray-400'>
+        <Link className='px-2' href={"/"}>Home</Link>
+        <Link className='px-2' href={"/about"}>About</Link>
+        {/* Remember you must wrap the dispatcher and it's action/thunk - otherwise it runs imemdiately */}
+        {user ? 
+          <>
+            <button className='px-2 hover:cursor-pointer' onClick={() => dispatch(requestLogout())}>Logout</button> 
+            <Link className='px-2' href={"/notes"}>My Notes</Link>
+          </>
+          :
+          <>
+            <Link className='px-2' href={"/login"}>Login</Link>
+            <Link className='px-2' href={"/register"}>Register</Link>
+          </>
+        }
+        <Link className='px-2' href={"/profile"}>Profile</Link>
+      </div>
     </div>
   )
 }

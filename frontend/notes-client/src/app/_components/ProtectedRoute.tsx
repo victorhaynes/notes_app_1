@@ -10,17 +10,22 @@ type ProtectedRouterProps = {
 }
 
 const ProtectedRoute = ({children}: ProtectedRouterProps) => {
-  const user = useSelector((state: RootState) => state.userState.user)
+  const {user, loading} = useSelector((state: RootState) => state.userState)
   const router = useRouter();
 
   useEffect(() => {
-    if (!user){
+    // redirect if a user is not currently being fetched and there isn't one in state
+    if (!loading && !user){
       router.push("/login")
     }
-  },[user, router]) // Technically only user needs to be in here but all dependencies including functions (router) used should be in the depndency array
+  },[user, router, loading]) // Technically only user needs to be in here but all dependencies including functions (router) used should be in the depndency array
+
+  if (loading){
+    return <div>Loading...</div>
+  }
 
   if (!user){
-    return <div>You must login to view this page. Redirecting...</div>
+    return <div>You must login to view this page. xxxRedirecting...</div>
   }
 
   return (

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework', # added, Django REST Framework
     'corsheaders', # added, CORS support
     'notes', # added, notes app
+    'django_seed' # added, for seeding
 ]
 
 MIDDLEWARE = [

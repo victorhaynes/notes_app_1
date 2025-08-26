@@ -18,7 +18,7 @@ type Note = {
 
 type NoteState = {
   notes: Note[];
-  selectedNote: null | Note
+  highlightedNote: null | Note
   loading: boolean;
   error: string | null;
   // Optionally, if I wanted per-action UI feedback I could have:
@@ -35,7 +35,7 @@ type NoteState = {
 // -- Initial State
 const initialState: NoteState = {
   notes: [],
-  selectedNote: null,
+  highlightedNote: null,
   loading: false,
   error: null
 }
@@ -43,7 +43,7 @@ const initialState: NoteState = {
 // -- Thunks -- define your how your payloads are constructed
 export const postNote = createAsyncThunk<
   Note,
-  {"owner": number, "title": string, "content": string},
+  {"title": string, "content": string},
   {rejectValue: string}
   >("note/create",
     async (noteData, {rejectWithValue}) => {
@@ -76,32 +76,14 @@ export const listNotes = createAsyncThunk<
     }
   )
 
-export const testThunk = createAsyncThunk<
-  object,
-  void,
-  { rejectValue: string }
->("note/test",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axiosAuthenticated.get<object>("/test/")
-      console.log(response)
-      return response.data
-    } catch (error: any) {
-      console.log(error)
-      const errorMessages = handleResponseError(error)
-      return rejectWithValue(errorMessages)
-    }
-  }
-)
-
 export const getNote = createAsyncThunk<
   Note,
-  number,
+  string,
   { rejectValue: string }
 >("note/read",
   async (noteId, { rejectWithValue }) => {
     try {
-      const response = await axiosAuthenticated.get<Note>(`/notes/${noteId}`)
+      const response = await axiosAuthenticated.get<Note>(`/notes/${noteId}/`)
       return response.data
     } catch (error: any) {
       const errorMessages = handleResponseError(error)
@@ -129,7 +111,7 @@ export const putNote = createAsyncThunk<
 // { id: number; data: Partial<Omit<Note, "id", "created_at", "updated_at">> }
 export const patchNote = createAsyncThunk<
   Note,
-  {"id": number, "data": {owner?: number, title?: string, content?: string}},
+  {"id": string, "data": {owner?: number, title?: string, content?: string}},
   { rejectValue: string }
 >("note/patch",
   async (newNoteData, { rejectWithValue }) => {
@@ -171,10 +153,11 @@ const noteSlice = createSlice({
       .addCase(getNote.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.highlightedNote = null // if we are getting a new note, remove any existing one
       })
       .addCase(getNote.fulfilled, (state, action) => {
         state.loading = false;
-        state.selectedNote = action.payload
+        state.highlightedNote = action.payload
       })
       .addCase(getNote.rejected, (state, action) => {
         state.loading = false;
@@ -205,7 +188,7 @@ const noteSlice = createSlice({
       .addCase(postNote.fulfilled, (state, action) => {
         state.loading = false;
         state.notes.push(action.payload) // append new note to master list
-        state.selectedNote = action.payload // set the selected note also
+        state.highlightedNote = action.payload // set the selected note also
       })
       .addCase(postNote.rejected, (state, action) => {
         state.loading = false;
@@ -220,10 +203,10 @@ const noteSlice = createSlice({
         state.loading = false;
         // -- keep this outside the conditional because if a user navs directly to /notes/n/, depending on the UI logic, the master list may never get populated, so it could never get found in the .findIndex() method
         // -- good practice to decouple these
-        state.selectedNote = action.payload
+        state.highlightedNote = action.payload
         
         // -- Find the index of the old note
-        // -- Remembr: benefit of using .findIndex() over .filter() is we don't need to create a copy of the array, just in place modificaiton so O(1) space not O(n). O(n) time still.
+        // -- Remember: benefit of using .findIndex() over .filter() is we don't need to create a copy of the array, just in place modificaiton so O(1) space not O(n). O(n) time still.
         const index = state.notes.findIndex((individualNote) => {
           return individualNote.id === action.payload.id
         })
@@ -242,7 +225,7 @@ const noteSlice = createSlice({
       })
       .addCase(putNote.fulfilled, (state, action) => {
         state.loading = false;
-        state.selectedNote = action.payload
+        state.highlightedNote = action.payload
         const index = state.notes.findIndex((individualNote) => {
           return individualNote.id === action.payload.id
         })
@@ -261,7 +244,7 @@ const noteSlice = createSlice({
       })
       .addCase(deleteNote.fulfilled, (state, action) => {
         state.loading = false;
-        state.selectedNote = null
+        state.highlightedNote = null
         const removalIndex = action.meta.arg // -- This is the 'number' variable we pass into dispatch(deleteNote(1))
         state.notes = state.notes.filter((individualNote) => {
           if (individualNote.id === removalIndex){

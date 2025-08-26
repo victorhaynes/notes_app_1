@@ -20,7 +20,7 @@ type UserState = {
 // -- Initial State --
 const initialState: UserState = {
   user: null,
-  loading: false,
+  loading: true,
   error: null
 }
 
@@ -127,11 +127,16 @@ const userSlice = createSlice({ // -- Note thunks just return payloads or null, 
         state.error = action.payload ?? "Registration failed."
       })
       // -- Fetch Current User Cases -- note .pending not necessary we don't care about loading state for this really
+      .addCase(fetchCurrentUser.pending, (state) => {
+        state.loading = true
+      })
       .addCase(fetchCurrentUser.fulfilled, (state, action) => {
         state.user = action.payload
+        state.loading = false
       })
       .addCase(fetchCurrentUser.rejected, (state, action) => {
         state.user = null
+        state.loading = false
         // -- Note: we do not want to set any errors for this...it is totally valid for user check to fail
       })
       // -- Logout Cases
