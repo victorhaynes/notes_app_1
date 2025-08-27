@@ -58,32 +58,34 @@ function RegisterPage() {
   }, [user, reset, router]) // Technically only user is needed, but convention is to include all dependencies including functions
 
   return (
-    <div>
-      <h2>Registration Form</h2>
+    <div className='max-w-7xl mx-auto px-4 mt-4'>
+      <h1 className='font-bold text-xl mb-4'>Register</h1>
       <form onSubmit={handleSubmit(submitForm)}>
-        <div>
-          <label>Username</label>
-          <input type="text" className="bg-sky-200" {...register("username", { required: true})}/>
+        <div className='flex flex-col gap-4'>
+          <div className="flex gap-1">
+            <label className='w-20'>Username:</label>
+            <input type="text" className="bg-sky-100 rounded-sm outline" {...register("username", { required: true})}/>
+          </div>
+          <div className="flex gap-1">
+            <label className='w-20'>Email:</label>
+            <input type="email" className="bg-sky-100 rounded-sm outline" {...register("email", { required: true })} />
+          </div>
+          <div className="flex gap-1">
+            <label className='w-20'>Password:</label>
+            <input type="password" className="bg-sky-100 rounded-sm outline" {...register("password", { required: true })} />
+          </div>
+          <div className="flex gap-1">
+            <label className='w-20'>Confirm Pasword:</label>
+            <input type="password" className="bg-sky-100 rounded-sm outline h-6" {...register("confirmPassword", { required: true })} />
+          </div>
+          <div>
+            {formErrors.username && <p>{formErrors.username.message}</p>}
+            {formErrors.email && <p>{formErrors.email.message}</p>}
+            {formErrors.password && <p>{formErrors.password.message}</p>}
+            {formErrors.confirmPassword && <p>{formErrors.confirmPassword.message}</p>}
+          </div>
+          <button type="submit" className='outline-1 rounded-sm p-1 w-18 bg-gray-300 hover:brightness-85 transition' disabled={userLoading}>{userLoading ? "Registering...": "Register"}</button>
         </div>
-        <div>
-          <label>Email</label>
-          <input type="email" className="bg-sky-200" {...register("email", { required: true })} />
-        </div>
-        <div>
-          <label>Password</label>
-          <input type="password" className="bg-sky-200" {...register("password", { required: true })} />
-        </div>
-        <div>
-          <label>Confirm Pasword</label>
-          <input type="password" className="bg-sky-200" {...register("confirmPassword", { required: true })} />
-        </div>
-        <div>
-          {formErrors.username && <p>{formErrors.username.message}</p>}
-          {formErrors.email && <p>{formErrors.email.message}</p>}
-          {formErrors.password && <p>{formErrors.password.message}</p>}
-          {formErrors.confirmPassword && <p>{formErrors.confirmPassword.message}</p>}
-        </div>
-        <button type="submit" className="outline-1" disabled={userLoading}>{userLoading ? "Registering...": "Register"}</button>
       </form>
       <div>
         {userError && <p className="text-red-600">{userError}</p>}

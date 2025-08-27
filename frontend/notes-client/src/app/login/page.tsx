@@ -44,21 +44,23 @@ const LoginPage = () => {
   }, [user, reset, router])
 
   return (
-    <div>
-      <h2>Login Form</h2>
+    <div className='max-w-7xl mx-auto px-4 mt-4'>
+      <h1 className='font-bold text-xl mb-4'>Login</h1>
       <form onSubmit={handleSubmit(submitForm)}>
-        <div>
-          <label>Username:</label>
-          <input type="text" className='bg-sky-200' {...register("username", {required: true})}></input>
-        </div>
-        <div>
-          <label>Password:</label>
-          <input type="password" className='bg-sky-200'{...register("password", { required: true })}></input>
-        </div>
-        <button type="submit" className='outline-1' disabled={userLoading}>{userLoading ? "Logging in..." : "Login"}</button>
-        <div>
-          {formErrors.username && <p>{formErrors.username.message}</p>}
-          {formErrors.password && <p>{formErrors.password.message}</p>}
+        <div className='flex flex-col gap-4'>
+          <div className='flex gap-1'>
+            <label className='w-20'>Username:</label>
+            <input type="text" className='bg-sky-100 rounded-sm outline' {...register("username", {required: true})}></input>
+          </div>
+          <div className='flex gap-1'>
+            <label className='w-20'>Password:</label>
+            <input type="password" className='bg-sky-100 rounded-sm outline'{...register("password", { required: true })}></input>
+          </div>
+          <button type="submit" className='outline-1 rounded-sm p-1 w-14 bg-gray-300 hover:brightness-85 transition' disabled={userLoading}>{userLoading ? "Logging in..." : "Login"}</button>
+          <div>
+            {formErrors.username && <p>{formErrors.username.message}</p>}
+            {formErrors.password && <p>{formErrors.password.message}</p>}
+          </div>
         </div>
       </form>
       <div>

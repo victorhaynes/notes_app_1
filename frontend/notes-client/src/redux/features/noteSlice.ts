@@ -36,7 +36,7 @@ type NoteState = {
 const initialState: NoteState = {
   notes: [],
   highlightedNote: null,
-  loading: false,
+  loading: true,
   error: null
 }
 
@@ -78,7 +78,7 @@ export const listNotes = createAsyncThunk<
 
 export const getNote = createAsyncThunk<
   Note,
-  string,
+  number,
   { rejectValue: string }
 >("note/read",
   async (noteId, { rejectWithValue }) => {
@@ -111,12 +111,12 @@ export const putNote = createAsyncThunk<
 // { id: number; data: Partial<Omit<Note, "id", "created_at", "updated_at">> }
 export const patchNote = createAsyncThunk<
   Note,
-  {"id": string, "data": {owner?: number, title?: string, content?: string}},
+  {"id": number, title?: string, content?: string},
   { rejectValue: string }
 >("note/patch",
   async (newNoteData, { rejectWithValue }) => {
     try {
-      const response = await axiosAuthenticated.patch<Note>(`api/notes/${newNoteData.id}/`, newNoteData.data)
+      const response = await axiosAuthenticated.patch<Note>(`/notes/${newNoteData.id}/`, newNoteData)
       return response.data
     } catch (error: any) {
       const errorMessages = handleResponseError(error)
@@ -132,7 +132,7 @@ export const deleteNote = createAsyncThunk<
 >("note/delete",
   async (noteId, { rejectWithValue }) => {
     try {
-      const response = await axiosAuthenticated.delete(`api/notes/${noteId}/`)
+      const response = await axiosAuthenticated.delete(`/notes/${noteId}/`)
       return undefined // could also return the noteId so the slice has easier access, but not necessary
     } catch (error: any) {
       const errorMessages = handleResponseError(error)

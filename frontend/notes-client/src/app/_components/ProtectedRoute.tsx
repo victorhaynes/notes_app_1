@@ -15,17 +15,18 @@ const ProtectedRoute = ({children}: ProtectedRouterProps) => {
 
   useEffect(() => {
     // redirect if a user is not currently being fetched and there isn't one in state
+    // HydrateUserOrDoNothing component/wrapper handles this. This component just reads and decides what to do
     if (!loading && !user){
       router.push("/login")
     }
   },[user, router, loading]) // Technically only user needs to be in here but all dependencies including functions (router) used should be in the depndency array
 
   if (loading){
-    return <div>Loading...</div>
+    return <div className="fixed inset-0 flex justify-center items-center">Loading...</div>
   }
 
   if (!user){
-    return <div>You must login to view this page. xxxRedirecting...</div>
+    return <div className="fixed inset-0 flex justify-center items-center text-red-800">You must login to view this page. Redirecting...</div>
   }
 
   return (

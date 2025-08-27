@@ -1,6 +1,6 @@
 "use client"
 
-import { listNotes, postNote } from "@/redux/features/noteSlice"
+import { deleteNote, listNotes, postNote } from "@/redux/features/noteSlice"
 import { AppDispatch, RootState } from "@/redux/store"
 import Link from "next/link"
 import { useEffect } from "react"
@@ -21,7 +21,7 @@ const NotesPage = () => {
 
   useEffect(() => {
     dispatch(listNotes())
-  }, [])
+  }, [dispatch])
 
   const [showCreateForm, setShowCreateForm] = useState<boolean>(false)
   const form = useForm<NoteForm>();
@@ -48,13 +48,15 @@ const NotesPage = () => {
       }
   }, [])
 
-  if(loading){
-    return <div>Fetching your notes...</div>
+  const [deleteMode, setDeleteMode] = useState<boolean>(false)
+
+  function handleDelete(id: number): void {
+    dispatch(deleteNote(id))
   }
 
-  if(error){
-    return <div>{error}</div>
-  }
+
+  if (loading) return <div className="fixed inset-0 flex justify-center items-center">Fetching note...</div>
+  if (error) return <div className="fixed inset-0 flex justify-center items-center text-red-800">{error}</div>
 
   return (
     <ProtectedRoute>
@@ -65,15 +67,25 @@ const NotesPage = () => {
               onClick={() => setShowCreateForm(true)}
               >New Note
             </button>
-            <button className="bg-gray-300 border p-1 rounded-md hover:brightness-85 transition">Delete Mode</button>
+            <button className="bg-gray-300 border p-1 rounded-md hover:brightness-85 transition"
+              onClick={() => setDeleteMode((boolVal) => !boolVal)}
+            >Delete Mode</button>
           </div>
           {/* Grid for Notes / standard display */}
           <div className={`grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 ${showCreateForm && "opacity-50"}`}>
             {notes.map((note) => {
                 return (
                   <Link key={note.id} href={`/notes/${note.id}`} className="block p-4 border rounded-md bg-amber-100 hover:brightness-90 transition">
-                    <div className="font-bold">
-                      {note.title}
+                    <div className="flex font-bold justify-between">
+                      <div>
+                        {note.title}
+                      </div>
+                      <div>
+                        {deleteMode && <button className="hover:cursor-pointer" onClick={(e) => {
+                          e.preventDefault(); // remember the entire card is a link, so prevent nav/link following
+                          handleDelete(note.id);
+                        }}>[X]</button>}
+                      </div>
                     </div>
                   </Link>
                 )
@@ -84,16 +96,20 @@ const NotesPage = () => {
         {/* New Note Form & black-out */}
         {showCreateForm && (
           <div className="fixed inset-0 bg-black/50 z-40 flex items-center justify-center">
+            {/* fixed: fixed relative to viewport, inset-0: makes div take up entire screen */}
             <div className="bg-sky-50 p-4 rounded border">
               <form onSubmit={handleSubmit(submitForm)}>
                 <div className="mb-2">
                   <label>Title</label>
-                  <input type="text" className="w-full border rounded p-1 bg-white" {...register("title")}/>
+                  <input type="text" className="w-full border rounded p-1 bg-white" {...register("title", {required: "Title is required."})}/>
                 </div>
                 <div className="mb-2">
                   <label>Content</label>
-                  <textarea className="w-full border rounded p-1 h-20 bg-white" {...register("content")}
-                  />
+                  <textarea className="w-full border rounded p-1 h-20 bg-white" {...register("content", {required: "Content cannot be empty."})}/>
+                </div>
+                <div className="flex-col gap-1 mb-1 text-red-600">
+                  {formErrors.title && <p>{formErrors.title.message}</p>}
+                  {formErrors.content && <p>{formErrors.content.message}</p>}
                 </div>
                 <div className="flex gap-2">
                   <button type="button"
@@ -105,7 +121,7 @@ const NotesPage = () => {
                   >
                     Cancel
                   </button>
-                  <button type="submit" className="border rounded px-2 py-1 bg-sky-200">Save</button>
+                  <button type="submit" className="border rounded px-2 py-1 bg-sky-200" disabled={loading}>{loading? "Saving..." : "Save"}</button>
                 </div>
               </form>
             </div>

@@ -44,7 +44,7 @@ class NoteDetailAPIView(APIView):
         return Response(read_serializer.data)
 
     def put(self, request, pk):
-        """Total Update"""
+        """Total Update -- not used in the UI"""
         note = get_object_or_404(Note, pk=pk, owner=request.user)
         write_serializer = NoteWriteSerializer(note, data=request.data, context={'request': request})
         if write_serializer.is_valid():

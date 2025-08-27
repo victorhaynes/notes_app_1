@@ -8,7 +8,7 @@ import type { AppDispatch } from "@/redux/store"
 // -- Purpose of this component is to fetch and re-set the current user in state, if one exists according to the cookies
 // -- allows users to refresh manually without losing their user state
 
-export const CheckOrSetUserOnMount = () => {
+export const HydrateUserOrDoNothing = () => {
   const dispatch = useDispatch<AppDispatch>()
 
   useEffect(() => {
